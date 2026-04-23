@@ -1,0 +1,29 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+      - run: pip install -r requirements.txt
+      - run: pytest
+
+  build-image:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: docker build -t my-app .
+
+  deploy:
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploy step here"
